@@ -19,4 +19,4 @@ Aplikasi ini digunakan membantu mahasiswa POLBAN dalam melakukan absensi otomati
 Gunakan aplikasi ini dengan bijak
 
 ## Lisensi
-Proyek ini dilisensikan di bawah MIT License.
+Proyek ini dilisensikan di bawah [MIT License](https://github.com/FredyKurniadi/autoAbsen/blob/main/LICENSE).
