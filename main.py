@@ -23,6 +23,8 @@ root = Tk()
 nim = StringVar()
 password = StringVar()
 
+check_acc = False
+
 
 def read_json(filename):
     if not os.path.exists(filename):
@@ -146,37 +148,37 @@ def run_bot():
                     except Exception as e:
                         print("An error occurred while clicking the button:", str(e))
 
-                    now = datetime.datetime.now().strftime("%H:%M:%S")
-                    if any(jam_perkuliahan.replace(" s.d. ", "-") in now and data[2] != "Sudah Absensi" for data
-                           in data_perkuliahan):
-                        try:
-                            while True:
-                                now = datetime.datetime.now().strftime("%H:%M:%S")
-                                if any(jam_perkuliahan.replace(" s.d. ", "-") in now and data[
-                                    2] != "Sudah Absensi" for data in data_perkuliahan):
-                                    time.sleep(300)
-                                    print("------- Waktunya Absen")
-                                    driver.refresh()
-                                else:
-                                    break
-                        except Exception as e:
-                            print("An error occurred while refreshing the page:", str(e))
-                    else:
-                        print("-------- Bukan Waktu Absen")
-                        while True:
-                            now = datetime.datetime.now().strftime("%H:%M:%S")
-                            if any(jam_perkuliahan.replace(" s.d. ", "-") in now and data[2] != "Sudah Absensi"
-                                   for data in data_perkuliahan):
-                                break
-                            else:
-                                time.sleep(1)
+                    # now = datetime.datetime.now().strftime("%H:%M:%S")
+                    # if any(jam_perkuliahan.replace(" s.d. ", "-") in now and data[2] != "Sudah Absensi" for data
+                    #        in data_perkuliahan):
+                    #     try:
+                    #         while True:
+                    #             now = datetime.datetime.now().strftime("%H:%M:%S")
+                    #             if any(jam_perkuliahan.replace(" s.d. ", "-") in now and data[
+                    #                 2] != "Sudah Absensi" for data in data_perkuliahan):
+                    #                 time.sleep(300)
+                    #                 print("------- Waktunya Absen")
+                    #                 driver.refresh()
+                    #             else:
+                    #                 break
+                    #     except Exception as e:
+                    #         print("An error occurred while refreshing the page:", str(e))
+                    # else:
+                    #     print("-------- Bukan Waktu Absen")
+                    #     while True:
+                    #         now = datetime.datetime.now().strftime("%H:%M:%S")
+                    #         if any(jam_perkuliahan.replace(" s.d. ", "-") in now and data[2] != "Sudah Absensi"
+                    #                for data in data_perkuliahan):
+                    #             break
+                    #         else:
+                    #             time.sleep(1)
 
-                    # time.sleep(100)
+                    time.sleep(300)
 
-                    # try:
-                    #     driver.refresh()
-                    # except Exception as e:
-                    #     print("An error occurred while refreshing the page:", str(e))
+                    try:
+                        driver.refresh()
+                    except Exception as e:
+                        print("An error occurred while refreshing the page:", str(e))
 
                 driver.quit()
         else:
@@ -206,10 +208,12 @@ def setting():
 
 
 def close_setting():
-    nim.set("")
-    password.set("")
-    stsCheck.configure(text="")
-    settingFrame.place_forget()
+    global check_acc
+    if not check_acc:
+        nim.set("")
+        password.set("")
+        stsCheck.configure(text="")
+        settingFrame.place_forget()
 
 
 def none():
@@ -217,11 +221,14 @@ def none():
 
 
 def check_account(enim, epassword):
-    btnCheck.configure(text="Periksa", command=none, default="disabled", cursor="arrow", bg="#2D3133", fg="#202124", activebackground="#2D3133", activeforeground='#202124')
+    btnCheck.configure(text="Periksa", command=none, default="disabled", cursor="arrow", bg="#2D3133", fg="#202124",
+                       activebackground="#2D3133", activeforeground='#202124')
     stsCheck.configure(text="Memeriksa akun...", fg="#459e48")
 
     def bot_thread():
         if is_internet_connected():
+            global check_acc
+            check_acc = True
             driver = webdriver.Chrome(options=chrome_options)
             driver.get("https://akademik.polban.ac.id/")
             driver.find_element(By.NAME, "username").send_keys(enim)
@@ -238,12 +245,17 @@ def check_account(enim, epassword):
 
             if driver.current_url == 'https://akademik.polban.ac.id/Mhs':
                 stsCheck.configure(text="Akun ditemukan", fg="#459e48")
-                btnCheck.configure(text="Simpan", default="normal", cursor="hand2", command=lambda: save_account(nim.get(), password.get()), background="#459e48", fg="white", activebackground="#2D3133", activeforeground='#202124')
+                btnCheck.configure(text="Simpan", default="normal", cursor="hand2",
+                                   command=lambda: save_account(nim.get(), password.get()), background="#459e48",
+                                   fg="white", activebackground="#2D3133", activeforeground='#202124')
             else:
                 stsCheck.configure(text="Akun tidak ditemukan", fg="#cd323b")
-                btnCheck.configure(text="Periksa", default="normal", cursor="hand2", command=lambda: check_account(nim.get(), password.get()), background="#459e48", fg="white", activebackground="#2D3133", activeforeground='#202124')
+                btnCheck.configure(text="Periksa", default="normal", cursor="hand2",
+                                   command=lambda: check_account(nim.get(), password.get()), background="#459e48",
+                                   fg="white", activebackground="#2D3133", activeforeground='#202124')
 
             driver.quit()
+            check_acc = False
         else:
             stsCheck.configure(text="Gagal menghubungkan ke internet", fg="#cd323b")
 
@@ -285,8 +297,10 @@ if __name__ == "__main__":
     filemenu.add_command(label="Credits", command=open_credits)
     menubar.add_cascade(label="Help", menu=filemenu)
 
-    btn1 = Button(root, command=run_bot, text="Jalankan Bot", width=30, height=2, bg="#459e48", fg='white', bd=0, cursor="hand2", activebackground="#2D3133", activeforeground='#202124')
-    btn2 = Button(root, command=setting, text="Atur Akun", width=30, height=2, bg="#3C4042", fg='white', bd=0, cursor="hand2", activebackground="#2D3133", activeforeground='#202124')
+    btn1 = Button(root, command=run_bot, text="Jalankan Bot", width=30, height=2, bg="#459e48", fg='white', bd=0,
+                  cursor="hand2", activebackground="#2D3133", activeforeground='#202124')
+    btn2 = Button(root, command=setting, text="Atur Akun", width=30, height=2, bg="#3C4042", fg='white', bd=0,
+                  cursor="hand2", activebackground="#2D3133", activeforeground='#202124')
 
     statusFrame = Frame(root, width=330, height=40, bg="#202124")
     lbl = Label(statusFrame, text="Status: ", bg="#202124", fg="white")
@@ -310,13 +324,17 @@ if __name__ == "__main__":
     nimEntry = Entry(settingFrame, textvariable=nim, width=53, border=0, highlightthickness=6)
     passLabel = Label(settingFrame, text="Password: ", bg="#202124", fg="white")
     passEntry = Entry(settingFrame, textvariable=password, show="*", width=53, border=0, highlightthickness=6)
-    btnCheck = Button(settingFrame, text="Periksa", command=lambda: check_account(nim.get(), password.get()) , width=15, height=2, border=0, background="#459e48", fg="white", cursor="hand2", activebackground="#2D3133", activeforeground='#202124')
-    btnBack = Button(settingFrame, text="Kembali", command=close_setting, width=15, height=2, border=0, background="#3C4042", fg="white", cursor="hand2", activebackground="#2D3133", activeforeground='#202124')
+    btnCheck = Button(settingFrame, text="Periksa", command=lambda: check_account(nim.get(), password.get()), width=15,
+                      height=2, border=0, background="#459e48", fg="white", cursor="hand2", activebackground="#2D3133",
+                      activeforeground='#202124')
+    btnBack = Button(settingFrame, text="Kembali", command=close_setting, width=15, height=2, border=0,
+                     background="#3C4042", fg="white", cursor="hand2", activebackground="#2D3133",
+                     activeforeground='#202124')
     stsCheck = Label(settingFrame, text="", bg="#202124", fg="#cd323b")
 
     nimLabel.place(x=30, y=88)
     nimEntry.place(x=100, y=82)
-    nimEntry.config(highlightbackground = "white", highlightcolor= "white")
+    nimEntry.config(highlightbackground="white", highlightcolor="white")
     passLabel.place(x=30, y=128)
     passEntry.place(x=100, y=122)
     passEntry.config(highlightbackground="white", highlightcolor="white")
