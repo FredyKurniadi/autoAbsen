@@ -280,6 +280,9 @@ def on_entry_change(*args):
 
 
 def update_info(data_perkuliahan):
+    for i in range(6):
+        b = Label(infoFrame, text=f"", bg="#202124", fg="white", width="500")
+        b.grid(sticky=W, column=0, row=i + 1)
     for index, data in enumerate(data_perkuliahan):
         jadwal = Label(infoFrame, text=f"{data[0]}, {data[1]} | {data[2]}", bg="#202124", fg="white")
         jadwal.grid(sticky=W, column=0, row=index + 1)
@@ -287,7 +290,7 @@ def update_info(data_perkuliahan):
 
 if __name__ == "__main__":
     root.title("Auto Absen Akademik POLBAN")
-    root.geometry('500x330')
+    root.geometry('700x330')
     root.resizable(False, False)
     root.configure(background='#202124')
     root.iconbitmap("app.ico")
@@ -332,17 +335,17 @@ if __name__ == "__main__":
                      activeforeground='#202124')
     stsCheck = Label(settingFrame, text="", bg="#202124", fg="#cd323b")
 
-    nimLabel.place(x=30, y=88)
-    nimEntry.place(x=100, y=82)
+    nimLabel.place(x=130, y=88)
+    nimEntry.place(x=200, y=82)
     nimEntry.config(highlightbackground="white", highlightcolor="white")
-    passLabel.place(x=30, y=128)
-    passEntry.place(x=100, y=122)
+    passLabel.place(x=130, y=128)
+    passEntry.place(x=200, y=122)
     passEntry.config(highlightbackground="white", highlightcolor="white")
 
-    stsCheck.place(x=30, y=160)
+    stsCheck.place(x=130, y=160)
 
-    btnBack.place(x=30, y=200)
-    btnCheck.place(x=320, y=200)
+    btnBack.place(x=130, y=200)
+    btnCheck.place(x=390, y=200)
 
     nim.trace_add("write", on_entry_change)
     password.trace_add("write", on_entry_change)
